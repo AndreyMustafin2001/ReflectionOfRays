@@ -3,7 +3,25 @@
 #include <map>
 void readAllGroups(const std::map<double, std::vector<std::pair<double, double>>>& groupPairs)
 {
+
     auto it = groupPairs.begin();
+    double minX = it->second.begin()->first;
+    for (const auto& p : it->second)
+    {
+        if(minX > p.first)
+            minX = p.first;
+    }
+
+    double maxX = it->second.begin()->first;
+    for (const auto& p : it->second)
+    {
+        if(maxX < p.first)
+            maxX = p.first;
+    }
+
+    double middleX = 0.5 * (minX + maxX);
+    std::cout << "MiddleX=" << middleX << std::endl;
+
     for (it = groupPairs.begin(); it != groupPairs.end(); ++it)
     {
         std::cout << "Group y=" << it->first << ":" << std::endl;

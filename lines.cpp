@@ -1,21 +1,22 @@
 #include <iostream>
 #include <vector>
 #include <map>
-
-bool isSymmetric(const std::vector<std::pair<double, double>>& pointGroup, double middleX)
+//Symmetric check function
+bool isSymmetric(const std::vector<std::pair<int, int>>& pointGroup, double middleX)
 {
     double distanceToLeft = 0.0;
     double distanceToRight = 0.0;
-
-    std::map<double,double> have;
+    //Storing x coordinates and their quantity in  map have
+    std::map<int,int> have;
     for (const auto& pair : pointGroup)
     {
-        have[pair.first]=1;
+        have[pair.first]++;
     }
 
     for (const auto& pair : pointGroup)
     {
-        double symmx;
+        int symmx;
+        //Finding symmetric point
         if (pair.first <= middleX)
         {
             distanceToLeft = middleX - pair.first;
@@ -26,25 +27,32 @@ bool isSymmetric(const std::vector<std::pair<double, double>>& pointGroup, doubl
             distanceToRight = pair.first - middleX;
             symmx = middleX - distanceToRight;
         }
-        if(have.count(symmx) == 0)
+        //Checking presence
+        if(have[symmx] != have[pair.first])
             return false;
 
     }
     return true;
 }
-
-void readAllGroups(const std::map<double, std::vector<std::pair<double, double>>>& groupPairs)
+//Finding candidate for middle point
+double straightline(std::vector<std::pair<int, int>>& pairs)
 {
-    bool answer = true;
+ std::map<int, std::vector<std::pair<int, int>>> groupPairs;
+    //Group by y coordinates inside map groupPairs;
+    for (const auto& pair : pairs)
+    {
+        groupPairs[pair.second].push_back(pair);
+    }
     auto it = groupPairs.begin();
-    double minX = it->second.begin()->first;
+    //Finding min x coordinate in first group
+    int minX = it->second.begin()->first;
     for (const auto& p : it->second)
     {
         if(minX > p.first)
             minX = p.first;
     }
-
-    double maxX = it->second.begin()->first;
+    //Finding max x coordinate in first group
+    int maxX = it->second.begin()->first;
     for (const auto& p : it->second)
     {
         if(maxX < p.first)
@@ -52,38 +60,33 @@ void readAllGroups(const std::map<double, std::vector<std::pair<double, double>>
     }
 
     double middleX = 0.5 * (minX + maxX);
-    std::cout << "MiddleX=" << middleX << std::endl;
-
-    for (it = groupPairs.begin(); it != groupPairs.end(); ++it)
-        {
-
-        std::cout << "Group y=" << it->first << ":" << std::endl;
-        for (const auto& pair : it->second)
-        {
-            std::cout << "(" << pair.first << ", " << pair.second << ")" << std::endl;
-        }
-
-            bool symmetricResult = isSymmetric(it->second, middleX);
-            if(symmetricResult == false)answer = false;
-            std::cout << "Simmetric ?: " << (symmetricResult ? "TRUE" : "FALSE") << std::endl;
-        }
-    if(answer == true){std::cout << "x="<< middleX << std::endl << "true";}
-    else std::cout << "false";
+    return middleX;
 }
-
-int main()
+//Checking existence of a vertical line, relative to which points are symmetric
+bool isSymmetricExists(std::vector<std::pair<int, int>>& pairs)
 {
-    std::vector<std::pair<double, double>> pairs = {{1, 2}, {3, 2}, {5, 2}, {3, 6}};
-
-    std::map<double, std::vector<std::pair<double, double>>> groupPairs;
+    //Group by y coordinates inside map groupPairs;
+    std::map<int, std::vector<std::pair<int, int>>> groupPairs;
 
     for (const auto& pair : pairs)
     {
         groupPairs[pair.second].push_back(pair);
     }
 
-    readAllGroups(groupPairs);
+    bool answer = true;
+    double middleX = straightline(pairs);
+    //Checking if the points are symmetric in the group with respect to the midpoint
+    for (auto it = groupPairs.begin(); it != groupPairs.end(); ++it)
+        {
+            bool symmetricResult = isSymmetric(it->second, middleX);
+            if(symmetricResult == false)answer = false;
+        }
 
-    return 0;
+    if(answer == true){std::cout << "x="<< middleX << std::endl << "true";return true;}
+    else
+    {
+        std::cout << "false";
+        return false;
+    }
 }
 

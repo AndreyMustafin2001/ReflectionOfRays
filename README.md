@@ -43,11 +43,12 @@ Project Work
 ```cpp
 #include <iostream>
 #include <vector>
-#include "имя_вашего_файла.cpp"
+#include "lines.cpp"
 
 int main() 
 {
-    std::vector<std::pair<int, int>> точки = {{1, 2}, {3, 4}, {5, 6}};
-    isSymmetricExists(точки);
+    std::vector<std::pair<int, int>> pairs = {{1, 2}, {3, 4}, {5, 6}};
+    std::pair<Bomb, int> ans;
+    ans = isSymmetricExists(pairs);
     return 0;
 }
